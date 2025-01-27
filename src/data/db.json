@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "id": "deda",
+      "email": "admin@ad.pl",
+      "username": "admin",
+      "password": "admin",
+      "favoriteRecipes": [
+        637683,
+        1095745
+      ]
+    }
+  ]
+}

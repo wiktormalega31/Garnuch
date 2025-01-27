@@ -1,0 +1,156 @@
+.recipe-container {
+  display: flex;
+  padding: 2rem;
+}
+
+.left-column,
+.right-column {
+  flex: 1 1;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.left-column {
+  margin-right: 1rem;
+  flex-direction: column;
+}
+
+.recipe-image {
+  width: 80%;
+  border-radius: 8px;
+}
+
+.button {
+  font-size: 1.5rem;
+  height: 3rem;
+  width: 100%;
+  background-color: #5b422c;
+  padding: 1rem;
+}
+
+.button:hover {
+  background-color: #c6bbb25e !important;
+  color: #5b422c !important;
+  border: #5b422c solid;
+}
+
+.signature {
+  font-size: 1.5rem;
+}
+
+.recipe-tabs {
+  position: sticky;
+  margin-top: 2rem;
+}
+
+/* Stylowanie zakładek */
+.recipe-tabs .ant-tabs-nav {
+  background-color: #f5f5f5; /* Kolor tła zakładek */
+  border-bottom: 2px solid #d9d9d9;
+  width: 100%;
+  flex: 1;
+}
+
+/* Kolor zakładek */
+.recipe-tabs .ant-tabs-tab {
+  height: 3rem;
+  color: #5b422c; /* Kolor tekstu zakładek */
+  border: #5b422c solid;
+  border-bottom: #d9d9d9;
+  font-size: 1.2rem;
+  padding: 1rem;
+  font-weight: bold;
+  text-align: center; /* Center text */
+  border-radius: 0.5rem 0.5rem 0 0;
+  width: 100%;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #d9d9d9;
+  text-align: center;
+}
+
+.ant-tabs .ant-tabs-ink-bar {
+  background-color: #d9d9d9; /* Zmień na wybrany kolor */
+}
+
+/* Kolor zakładki aktywnej */
+.recipe-tabs .ant-tabs-tab-active {
+  background-color: #5b422c; /* Tło aktywnej zakładki */
+  border-color: #5b422c;
+}
+
+.recipe-tabs .ant-tabs-tab:hover {
+  background-color: #5b422c; /* Tło zakładki przy najechaniu */
+  border-color: #d3d3d3;
+  color: #ffffff;
+}
+
+/* Stylowanie dla zawartości zakładek */
+.recipe-tabs .ant-tabs-tabpane {
+  padding: 1rem;
+  min-height: 200px; /* Ustaw minimalną wysokość, aby uniknąć przeskakiwania */
+}
+
+.recipe-tabs .ant-tabs-content-holder {
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease-in-out;
+}
+
+ul {
+  margin-top: 2rem;
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  font-size: 1.2rem;
+  line-height: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+img {
+  border-radius: 0.5rem;
+}
+
+/* Media Queries for small screens */
+@media (max-width: 600px) {
+  .recipe-container {
+    flex-direction: column;
+    width: 100%;
+    padding: 1.3rem;
+    margin: 0;
+  }
+  .button {
+    font-size: 1rem;
+    height: 2.5rem;
+    padding: 0.5rem;
+  }
+
+  .recipe-tabs .ant-tabs-tab {
+    font-size: 1rem;
+    padding: 0.5rem;
+  }
+
+  ul li {
+    font-size: 1rem;
+    line-height: 2rem;
+  }
+
+  .left-column,
+  .right-column {
+    margin-bottom: 1rem;
+  }
+  .ant-tabs .ant-tabs-tab-btn {
+    text-align: start;
+    word-wrap: break-word;
+    width: 3rem;
+    font-size: 0.45rem;
+  }
+}

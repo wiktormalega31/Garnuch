@@ -1,0 +1,39 @@
+/* Stylowanie formularza */
+.search-form {
+  margin-left: 2rem;
+  max-width: 100%;
+  position: sticky;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Kontener dla Input */
+.input-container {
+  width: 100%; /* Zapewnia pełną szerokość kontenera */
+}
+
+/* Stylowanie Input z Ant Design */
+.search-input {
+  width: 100%; /* Wypełnia dostępne miejsce */
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background-color: #f5f5f5; /* Tło inputu */
+  height: 40px; /* Zwiększenie wysokości inputu */
+  font-weight: 500; /* Nieco grubszy tekst */
+  color: #5b422c; /* Kolor tekstu */
+  border: 1px solid #d9d9d9; /* Delikatna ramka */
+}
+
+.search-input input {
+  color: #5b422c; /* Kolor tekstu w inpucie */
+}
+
+/* Ikona w Input */
+.search-input .ant-input-prefix {
+  color: #5b422c; /* Kolor ikony */
+}
+
+/* Stylowanie placeholdera */
+.search-input input::placeholder {
+  color: #aaa; /* Kolor placeholdera */
+}

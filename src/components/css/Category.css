@@ -1,0 +1,74 @@
+.category-list {
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem;
+  gap: 1rem; /* Odstęp między przyciskami */
+}
+
+.category-list a {
+  text-decoration: none; /* Usunięcie podkreślenia z linków */
+}
+
+.category-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+  width: 100%; /* Zmieniono na 100% */
+  max-width: 10rem; /* Maksymalna szerokość przycisku */
+  height: 4rem;
+  background-color: transparent;
+  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+.category-button h4 {
+  text-align: center;
+  color: #f8f8f8;
+}
+
+.category-button:hover {
+  background: #f2f2f256;
+  border-color: transparent;
+}
+
+.category-button:hover h4 {
+  color: #5b422c; /* Zmiana koloru tekstu na #5b422c na hover */
+}
+
+.category-button.ant-btn-primary {
+  background-color: #f2f2f2;
+  color: #5b422c;
+}
+
+.category-button.ant-btn-primary h4 {
+  color: #5b422c;
+}
+
+.h4 {
+  font-size: 1.5rem;
+  color: #5b422c;
+  margin: 1rem;
+}
+/* Responsywność - dla mniejszych ekranów */
+@media (max-width: 768px) {
+  .category-list {
+    gap: 0.5rem;
+    justify-content: center; /* Ustala przyciski na środku */
+  }
+
+  .category-button {
+    flex: 1 1 45%; /* Przyciski będą zajmować 45% szerokości kontenera */
+  }
+}
+
+@media (max-width: 480px) {
+  .category-list {
+    width: 100%;
+  }
+  .category-button {
+    flex: 1 1 100%; /* Przyciski będą zajmować 100% szerokości kontenera na małych ekranach */
+  }
+}

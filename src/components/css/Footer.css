@@ -1,0 +1,44 @@
+.custom-footer {
+  width: 100% !important;
+  height: 2rem;
+  background-color: #5b422c;
+  color: #fff;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  margin-top: 2rem !important;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.footer-text {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.footer-link {
+  color: #fff;
+  transition: color 0.3s;
+}
+
+.footer-link:hover {
+  color: #ccc;
+}
+
+.footer-icon {
+  font-size: 2rem;
+}
+
+.hidden-footer .custom-footer {
+  display: none;
+}

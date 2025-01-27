@@ -1,0 +1,87 @@
+.latest-recipes-container {
+  margin: 2rem !important;
+  text-align: left;
+  height: 20rem;
+}
+
+.no-recipes-message {
+  font-size: 1.5rem;
+  text-align: center;
+  color: #555;
+  margin-top: 2rem;
+}
+
+.recipe-card {
+  margin: 2rem;
+  position: relative;
+  border-radius: 0.5rem;
+  max-width: 24rem;
+  overflow: hidden;
+}
+
+.recipe-card .ant-card-cover img {
+  object-fit: cover;
+  border-radius: 0.5rem;
+  width: 100%;
+  height: 100%;
+}
+
+.recipe-card .ant-card-meta-title {
+  color: #fff;
+}
+
+.recipe-card .ant-card-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  padding: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  z-index: 10;
+  border-radius: 0 0 0.5rem 0.5rem;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+@media (max-width: 1200px) {
+  .recipe-card {
+    min-height: 15rem;
+    max-width: 18rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .recipe-card {
+    min-height: 12rem;
+    max-width: 16rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .recipe-card {
+    min-height: 10rem;
+    max-width: 14rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .recipe-card {
+    min-height: 8rem;
+    max-width: 12rem;
+  }
+}
+
+@media (max-width: 450px) {
+  .recipe-card {
+    min-height: 6rem;
+    max-width: 10rem;
+  }
+}

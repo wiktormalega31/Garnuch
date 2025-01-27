@@ -1,0 +1,102 @@
+/* Wrapper */
+.latest-recipes-container {
+  text-align: left;
+  height: fit-content;
+  margin-bottom: 3rem;
+  margin-top: 3rem;
+}
+
+/* No Recipes Message */
+.no-recipes-message {
+  font-size: 1.5rem;
+  text-align: center;
+  color: #555;
+  margin-top: 2rem;
+}
+
+/* Card Styles */
+.recipe-card {
+  position: relative;
+  border-radius: 0.5rem;
+}
+
+.recipe-card .ant-card-cover img {
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.recipe-card .ant-card-meta-title {
+  color: #fff;
+}
+
+.recipe-card .ant-card-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Półprzezroczyste tło */
+  text-align: center;
+  padding: 0.5rem; /* Odstęp wewnętrzny */
+  font-weight: 600; /* Wyróżnienie tekstu */
+  font-size: 1rem; /* Dopasowanie rozmiaru tekstu */
+  z-index: 10; /* Wyższy indeks z-index dla widoczności */
+  border-radius: 0 0 0.5rem 0.5rem; /* Dopasowanie zaokrąglenia dolnej części karty */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3); /* Delikatny cień */
+}
+
+.recipe-card .ant-card-body h4 {
+  color: #fff;
+}
+
+/* Loading Spinner */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Grid Layout (siatka) */
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+}
+/* Stylowanie dla select-container */
+.select-container {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 1.2rem;
+}
+
+.select-container label {
+  margin-right: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.select-container select {
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  background-color: #f9f9f9;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.select-container select:hover {
+  border-color: #888;
+}
+
+.select-container select:focus {
+  border-color: #5a9;
+  background-color: #fff;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .recipe-sign {
+    font-size: 1rem;
+  }
+}
