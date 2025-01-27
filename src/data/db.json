@@ -10,6 +10,13 @@
         1095745,
         660737
       ]
+    },
+    {
+      "id": "d17e",
+      "email": "admin@dsad.pl",
+      "username": "final",
+      "password": "1234",
+      "favoriteRecipes": []
     }
   ]
 }
