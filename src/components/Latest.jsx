@@ -109,20 +109,20 @@ function Latest() {
         >
           {displayedItems.map((recipe) => (
             <SplideSlide key={recipe.id} inert={loading ? "true" : undefined}>
-              <Card
-                className="recipe-card"
-                hoverable
-                cover={<img alt={recipe.title} src={recipe.image} />}
-              >
-                <Link to={`/recipe/${recipe.id}`}>
+              <Link to={`/recipe/${recipe.id}`}>
+                <Card
+                  className="recipe-card"
+                  hoverable
+                  cover={<img alt={recipe.title} src={recipe.image} />}
+                >
                   <Card.Meta
                     title={recipe.title}
                     description={
                       <Typography.Text className="recipe-title"></Typography.Text>
                     }
                   />
-                </Link>
-              </Card>
+                </Card>
+              </Link>
             </SplideSlide>
           ))}
         </Splide>
