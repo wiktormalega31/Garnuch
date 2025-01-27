@@ -11,7 +11,7 @@ body {
   padding: 0.5rem;
   background-color: #5b422c;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-  height: 8vh;
+  height: 6vh;
 }
 
 .left-column,
@@ -34,7 +34,7 @@ body {
 
 .logo-text {
   font-family: "Lobster", cursive;
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 700;
   color: #f8f8f8;
   margin-left: 1rem;
@@ -64,12 +64,14 @@ body {
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: center;
-  gap: 1rem;
+  gap: 2rem;
   margin-right: auto;
   flex-grow: 1;
 }
 
 .category-button {
+  min-height: 4rem;
+  min-width: 10rem;
   background-color: transparent;
   color: #f8f8f8;
   border-radius: 0.5rem;

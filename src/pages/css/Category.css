@@ -18,6 +18,11 @@
 .recipe-card {
   position: relative;
   border-radius: 0.5rem;
+  transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
+}
+
+.recipe-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Shadow on hover */
 }
 
 .recipe-card .ant-card-cover img {
@@ -58,7 +63,10 @@
 /* Grid Layout (siatka) */
 .recipe-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(30rem, 1fr)
+  ); /* Increased min-width from 20rem to 25rem */
 }
 /* Stylowanie dla select-container */
 .select-container {
@@ -98,5 +106,23 @@
 @media (max-width: 1024px) {
   .recipe-sign {
     font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25rem, 1fr));
+    gap: clamp(0.5rem, 2vw, 1rem); /* Dynamiczny odstęp między kolumnami */
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+@media (max-width: 520px) {
+  h4 {
+    font-size: 0.7rem;
+  }
+  .recipe-grid {
+    align-items: center;
   }
 }

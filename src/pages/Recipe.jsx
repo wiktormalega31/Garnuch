@@ -22,6 +22,8 @@ function Recipe() {
     );
     const detailData = await data.json();
     setDetails(detailData);
+    // Ustawienie listy składników w stanie shoppingList
+    setShoppingList(detailData.extendedIngredients || []);
   };
 
   const userId = localStorage.getItem("userId"); // Pobierz userId z localStorage
@@ -31,7 +33,6 @@ function Recipe() {
     const userData = await response.json();
     const favoriteRecipes = userData.favoriteRecipes || [];
     setIsFavorite(favoriteRecipes.includes(parseInt(params.name)));
-    setShoppingList(userData.shoppingList || []);
   };
 
   const toggleFavorite = async () => {
@@ -67,6 +68,7 @@ function Recipe() {
       console.error("Błąd podczas aktualizacji ulubionych przepisów:", error);
     }
   };
+
   useEffect(() => {
     fetchDetails();
     checkIfFavorite();
@@ -93,29 +95,30 @@ function Recipe() {
       <div className="right-column">
         <Tabs defaultActiveKey="1" className="recipe-tabs">
           <TabPane tab="Lista Zakupów" key="1">
-            <div>
-              <ul>
-                {shoppingList.map(
-                  (extendedIngredients, index) => (
-                    console.log(extendedIngredients),
-                    (<li key={index}>{extendedIngredients}</li>)
-                  )
-                )}
-              </ul>
-              <Button
-                onClick={() => {
-                  localStorage.setItem(
-                    "shoppingList",
-                    JSON.stringify(shoppingList)
-                  );
-                  alert("Lista zakupów została zapisana!");
-                }}
-                className="button"
-                type="primary"
-              >
-                Zapisz listę zakupów
-              </Button>
-            </div>
+            {shoppingList.length > 0 ? (
+              <div>
+                <ul>
+                  {shoppingList.map((ingredient, index) => (
+                    <li key={index}>{ingredient.name}</li>
+                  ))}
+                </ul>
+                <Button
+                  onClick={() => {
+                    localStorage.setItem(
+                      "shoppingList",
+                      JSON.stringify(shoppingList)
+                    );
+                    alert("Lista zakupów została zapisana!");
+                  }}
+                  className="button"
+                  type="primary"
+                >
+                  Zapisz listę zakupów
+                </Button>
+              </div>
+            ) : (
+              <Text>Brak pozycji na liście zakupów</Text>
+            )}
           </TabPane>
 
           <TabPane tab="Szczegóły" key="2" className="recipe-tabs">

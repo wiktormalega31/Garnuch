@@ -55,9 +55,7 @@ function AppLayout() {
       <Menu.Item>
         <Link to="/favorites">Ulubione</Link>
       </Menu.Item>
-      <Menu.Item>
-        <Link to="/profile">Mój profil</Link>
-      </Menu.Item>
+
       <Menu.Item onClick={onLogOut}>Wyloguj</Menu.Item>
     </Menu>
   );

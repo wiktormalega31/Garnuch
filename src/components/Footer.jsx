@@ -11,7 +11,7 @@ function CustomFooter() {
       <div className="footer-content">
         <span className="footer-text">© Garnuch 2025 Projekt Front-End</span>
         <Link
-          to="https://github.com/wiktormalega31/Project.git"
+          to="https://github.com/wiktormalega31/Garnuch.git"
           className="footer-link"
         >
           <FaGithub className="footer-icon" />
