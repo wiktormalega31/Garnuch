@@ -3,7 +3,7 @@
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg?cacheSeconds=2592000" />
 </p>
 
-> Aplikacja do gotowania, korzysta z api spoonacular do wyszukiwania przepisów i z JSON serwer do obsługi użytkowników i implementacją listy zakupów oraz przepisu krok po kroku
+> A simple cooking website built with React that connects to an API for recipe data. It features user authentication, a shopping list component, and step-by-step recipe instructions.
 
 ## Install
 
