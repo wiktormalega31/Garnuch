@@ -1,14 +1,17 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import styled from "styled-components";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import GoogleButton from "react-google-button";
 
-// eslint-disable-next-line react/prop-types
-const Login = ({ onLogin }) => {
-  const [loginMode, setLoginMode] = useState("email"); // "email", "username" or "register"
+const Login = () => {
+  const [loginMode, setLoginMode] = useState("email"); // "email", "username", "register"
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
 
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,71 +25,30 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/users");
-      const users = await response.json();
-
-      const userExists = users.some(
-        (user) => user.email === email || user.username === username
-      );
-
-      if (userExists) {
-        setError("Użytkownik o takim emailu lub nazwie już istnieje.");
-        return;
-      }
-
-      const newUser = {
-        email,
-        username,
-        password,
-        favoriteRecipes: [], // Tworzenie pustej tablicy ulubionych przepisów
-      };
-
-      await fetch("http://localhost:5000/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
-
-      console.log("Użytkownik zarejestrowany:", email);
-      onLogin(username);
-    } catch (error) {
-      setError("Wystąpił problem z rejestracją.");
+      await register(username, email, password);
+    } catch (err) {
+      const msg = err.response?.data
+        ? Object.values(err.response.data).flat().join(" ")
+        : "Wystąpił problem z rejestracją.";
+      setError(msg);
     }
   };
 
   const handleLogin = async () => {
+    console.log("Kliknięto ZALOGUJ");
+
     if (!password) {
       setError("Podaj hasło.");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:5000/users");
-      const users = await response.json();
-
-      const user = users.find(
-        (user) =>
-          (loginMode === "email"
-            ? user.email === email
-            : user.username === username) && user.password === password
-      );
-
-      if (!user) {
-        setError("Nieprawidłowy email, nazwa użytkownika lub hasło.");
-        return;
-      }
-
-      console.log(
-        "Zalogowano pomyślnie:",
-        loginMode === "email" ? email : username
-      );
-      localStorage.setItem("userId", user.id); // Store userID in local storage
-
-      onLogin(user.username);
-    } catch (error) {
-      setError("Wystąpił problem z logowaniem.");
+      await login(loginMode === "email" ? email : username, password);
+      console.log("Login zakończony");
+      navigate("/home"); // Przekierowanie po udanym logowaniu
+    } catch (err) {
+      console.error("Błąd logowania", err);
+      setError("Nieprawidłowy login/email lub hasło.");
     }
   };
 
@@ -199,7 +161,6 @@ const Tab = styled.div`
   background-color: ${(props) => (props.isActive ? "#5b422c" : "#ddd")};
   color: ${(props) => (props.isActive ? "white" : "#5b422c")};
   border: 1px solid #5b422c;
-
   transition: 0.3s;
 
   &:hover {

@@ -22,7 +22,7 @@ function Searched() {
 
   useEffect(() => {
     getSearched(params.search, numRecipes);
-  }, [params.search, numRecipes]);
+  }, [params.search, numRecipes]); // Upewnij się, że zależności są poprawne
 
   return (
     <div className="latest-recipes-container">

@@ -15,15 +15,19 @@ function Recipe() {
   let params = useParams();
 
   const fetchDetails = async () => {
-    const data = await fetch(
-      `https://api.spoonacular.com/recipes/${params.name}/information?apiKey=${
-        import.meta.env.VITE_API_KEY
-      }`
-    );
-    const detailData = await data.json();
-    setDetails(detailData);
-    // Ustawienie listy składników w stanie shoppingList
-    setShoppingList(detailData.extendedIngredients || []);
+    try {
+      const data = await fetch(
+        `https://api.spoonacular.com/recipes/${
+          params.name
+        }/information?apiKey=${import.meta.env.VITE_API_KEY}`
+      );
+      const detailData = await data.json();
+      setDetails(detailData);
+      // Ustawienie listy składników w stanie shoppingList
+      setShoppingList(detailData.extendedIngredients || []);
+    } catch (error) {
+      console.error("Błąd podczas pobierania szczegółów przepisu:", error);
+    }
   };
 
   const userId = localStorage.getItem("userId"); // Pobierz userId z localStorage
