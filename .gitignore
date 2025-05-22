@@ -26,3 +26,4 @@ dist-ssr
 # User-specific files
 *.env
 *.zip
+venv/*
