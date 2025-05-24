@@ -24,7 +24,6 @@ dist-ssr
 *.sw?
 
 # User-specific files
-*.env
 *.zip
 backend/venv/*
 node_modules/

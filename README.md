@@ -15,19 +15,6 @@ Manualne uruchomienie
 
 1. Skonfiguruj zmienne środowiskowe:
    a) W katalogu `backend/` utwórz plik `.env`.
-   b) Uzupełnij wartości:
-   SECRET_KEY=<twój_secret_key>
-   DEBUG=True
-   ALLOWED_HOSTS=localhost,127.0.0.1
-   DB_NAME=<nazwa_bazy>
-   DB_USER=<użytkownik_bazy>
-   DB_PASSWORD=<hasło_do_bazy>
-   DB_HOST=localhost
-   DB_PORT=5432
-   SPOONACULAR_KEY=<twój_klucz_spoonacular>
-   PAYPAL_CLIENT_ID=<twój_paypal_client_id>
-   PAYPAL_CLIENT_SECRET=<twój_paypal_secret>
-   PAYPAL_MODE=sandbox # lub production
 
 2. Tworzenie i aktywacja środowiska wirtualnego (Windows PowerShell):
    cd backend
