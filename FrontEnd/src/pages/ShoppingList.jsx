@@ -46,7 +46,7 @@ function ShoppingList() {
                 onChange={() => toggleItemSelection(item.id)}
               />
               <div className="item-details">
-                <Text >
+                <Text>
                   {item.name} - {item.amount} {item.unit}
                 </Text>
               </div>

@@ -26,4 +26,6 @@ dist-ssr
 # User-specific files
 *.env
 *.zip
-venv/*
+backend/venv/*
+node_modules/
+frontend/node_modules/

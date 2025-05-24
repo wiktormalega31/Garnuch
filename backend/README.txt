@@ -1,1 +1,0 @@
-Pełna wersja backendu Django dla projektu Garnuch.

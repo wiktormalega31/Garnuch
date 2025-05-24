@@ -1,66 +1,70 @@
-import { Card, Spin } from "antd";
+// src/pages/All.jsx
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { Card, Spin, message } from "antd";
 import { motion } from "framer-motion";
+import { BACKEND } from "../axiosConfig";
 import "./css/Category.css";
 
 function All() {
   const [recipes, setRecipes] = useState([]);
-  const [numRecipes, setNumRecipes] = useState(10);
+  const [num, setNum] = useState(10);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  let params = useParams();
+  const { type } = useParams(); // obecnie nieużywane, ale zostawiamy
 
-  const getAll = async () => {
+  const fetchAll = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `https://api.spoonacular.com/recipes/random?apiKey=${
-          import.meta.env.VITE_API_KEY
-        }&number=${numRecipes}`
-      );
-      if (!response.ok) {
-        throw new Error("Nie udało się pobrać przepisów z API.");
-      }
-      const data = await response.json();
-      if (data.recipes) {
-        setRecipes(data.recipes);
-      } else {
+      const r = await fetch(`${BACKEND}/api/random/?number=${num}`, {
+        credentials: "include",
+      });
+      if (!r.ok) {
+        if (r.status === 503) {
+          message.info(
+            "Limit zapytań do przepisu wyczerpany – spróbuj za chwilę."
+          );
+        } else {
+          message.error("Nie udało się pobrać przepisów.");
+        }
         setRecipes([]);
+        return;
       }
-    } catch (err) {
-      setError(err.message);
-      console.error(err);
+      const json = await r.json(); // backend zwraca {recipes:[…]}
+      setRecipes(json);
+    } catch {
+      message.error("Błąd sieci podczas pobierania przepisów.");
+      setRecipes([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getAll();
-    console.log("Typ przepisu:", params.type);
-  }, [params.type, numRecipes]);
+    fetchAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, num]);
 
+  /* ---------- render ---------- */
   return (
     <div className="latest-recipes-container">
       <div className="select-container">
-        <label htmlFor="numRecipes">Liczba przepisów na stronie: </label>
-        <select
-          id="numRecipes"
-          value={numRecipes}
-          onChange={(e) => setNumRecipes(parseInt(e.target.value))}
-        >
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
+        <label>Liczba przepisów na stronie:&nbsp;</label>
+        <select value={num} onChange={(e) => setNum(+e.target.value)}>
+          {[5, 10, 15, 20].map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
         </select>
       </div>
-      {error ? (
-        <div className="no-recipes-message">{error}</div>
-      ) : loading ? (
+
+      {loading ? (
         <div className="loading-container">
           <Spin />
+        </div>
+      ) : !recipes.length ? (
+        <div className="no-recipes-message">
+          Brak przepisów do wyświetlenia.
         </div>
       ) : (
         <div className="recipe-grid">
@@ -69,16 +73,15 @@ function All() {
               key={recipe.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
             >
               <Card
                 className="recipe-card"
-                cover={<img alt={<Spin />} src={recipe.image} />}
+                hoverable
+                cover={<img src={recipe.image} alt={recipe.title} />}
               >
                 <Link to={`/recipe/${recipe.id}`}>
-                  <div className="ant-card-body">
-                    <h4>{recipe.title}</h4>
-                  </div>
+                  <h4>{recipe.title}</h4>
                 </Link>
               </Card>
             </motion.div>

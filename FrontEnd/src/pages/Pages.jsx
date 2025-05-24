@@ -8,6 +8,9 @@ import { AnimatePresence } from "framer-motion";
 import Login from "./Login";
 import Favorites from "./Favorites";
 import All from "./All";
+import Profile from "./Profile";
+import Premium from "./Premium";
+
 function Pages() {
   return (
     <AnimatePresence mode="wait">
@@ -21,6 +24,8 @@ function Pages() {
         <Route path="/shoppinglist" element={<ShoppingList />} />
         <Route path="/login" element={<Login />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/premium" element={<Premium />} />
       </Routes>
     </AnimatePresence>
   );

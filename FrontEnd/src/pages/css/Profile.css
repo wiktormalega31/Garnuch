@@ -1,0 +1,49 @@
+.profile-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+.profile-container {
+  max-width: 50vw;
+  min-height: 70vh;
+  margin: 2rem auto;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.profile-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #5b422c;
+}
+
+.profile-item {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #333333;
+}
+
+.profile-status {
+  font-weight: 600;
+}
+
+/* Registration date style */
+.profile-date {
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+/* Delete account button */
+.profile-delete-button {
+  margin-top: 2rem;
+  font-size: 3vh;
+  font-weight: 700;
+  background-color: rgb(243, 55, 55) !important;
+  color: #fff;
+  border: 2px solid #5b422c;
+}

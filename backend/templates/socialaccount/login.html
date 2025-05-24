@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}Logowanie przez GitHub{% endblock %}
+
+{% block content %}
+<div class="card">
+  <h2>Logowanie przez GitHub</h2>
+  <p>Przekierowywanie do GitHub...</p>
+  {% providers_media_js %}
+  <form id="github-login-form" action="{% provider_login_url "github" %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Kontynuuj z GitHub</button>
+  </form>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("github-login-form").submit();
+  });
+</script>
+{% endblock %}

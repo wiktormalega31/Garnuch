@@ -1,134 +1,110 @@
+// src/components/Latest.jsx
 import { useEffect, useState } from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/splide.min.css";
 import "./css/Latest.css";
 
 import { Link } from "react-router-dom";
-import { Card, Spin, Typography } from "antd";
+import { Card, Spin, Typography, message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-const { Title } = Typography;
+import { BACKEND } from "../axiosConfig";
 
-function Latest() {
-  const [latest, setLatest] = useState([]);
+const { Title, Paragraph } = Typography;
+
+export default function Latest() {
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /* ───────── INIT ───────── */
   useEffect(() => {
-    getLatest();
+    (async () => {
+      try {
+        // Pobieranie ostatnich przepisów z backendu
+        const res = await fetch(`${BACKEND}/api/recipes/latest/`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Backend error");
+        const data = await res.json();
+        setRecipes(data);
+      } catch {
+        message.error("Nie udało się pobrać historii przepisów.");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  const getLatest = async () => {
-    let itemIDs = JSON.parse(localStorage.getItem("ItemIDs")) || [];
-    const itemId = JSON.parse(localStorage.getItem("ItemID"));
+  /* ───────── helper: min. 4 slajdy ───────── */
+  const slides =
+    recipes.length >= 4
+      ? recipes
+      : Array.from({ length: 4 }, (_, i) => recipes[i % recipes.length]);
 
-    if (itemId && !itemIDs.includes(itemId)) {
-      itemIDs.push(itemId);
-      localStorage.setItem("ItemIDs", JSON.stringify(itemIDs));
-    }
-
-    if (itemIDs.length > 0) {
-      try {
-        const api = await fetch(
-          `https://api.spoonacular.com/recipes/informationBulk?apiKey=${
-            import.meta.env.VITE_API_KEY
-          }&ids=${itemIDs.join(",")}`
-        );
-
-        const data = await api.json();
-        if (data && Array.isArray(data)) {
-          localStorage.setItem("Latest", JSON.stringify(data));
-          setLatest(data);
-        } else {
-          console.warn("No valid recipes returned for the given IDs.");
-        }
-      } catch (error) {
-        console.error("Error fetching data from the API:", error);
-      }
-    } else {
-      console.warn("No ItemIDs found in localStorage.");
-    }
-
-    setLoading(false);
-  };
-
-  const fillCarousel = (items) => {
-    const filledItems = [...items];
-    while (filledItems.length < 4) {
-      filledItems.push(...items);
-    }
-    return filledItems.slice(0, 4);
-  };
-
-  if (loading) {
+  /* ───────── RENDER ───────── */
+  if (loading)
     return (
       <div className="loading-container">
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+        <Spin indicator={<LoadingOutlined spin />} />
       </div>
     );
-  }
 
-  const displayedItems = latest.length < 4 ? fillCarousel(latest) : latest;
+  if (!recipes.length)
+    return (
+      <div className="latest-recipes-container">
+        <Title level={3}>Ostatnio przeglądane</Title>
+        <Paragraph className="no-recipes-message">
+          Brak historii – zacznij przeglądać przepisy!
+        </Paragraph>
+      </div>
+    );
 
   return (
     <div className="latest-recipes-container">
-      <Title level={3}>Ostatnio Przeglądane</Title>
-      {latest.length === 0 ? (
-        <Typography.Paragraph className="no-recipes-message">
-          Może coś zjemy??
-        </Typography.Paragraph>
-      ) : (
-        <Splide
-          options={{
-            perPage: 4,
-            perMove: 1,
-            gap: "3rem",
-            width: "100%",
-            autoWidth: true,
-            type: "loop",
-            arrows: true,
-            pagination: false,
-            drag: "free",
-            focus: "center",
-            snap: true,
-            padding: "2rem",
-            breakpoints: {
-              1200: {
-                gap: "1rem",
-              },
-              992: {
-                gap: "0.5rem",
-              },
-              768: {
-                gap: "0.25rem",
-              },
-              576: {
-                gap: "0.1rem",
-              },
+      <Title level={3}>Ostatnio przeglądane</Title>
+
+      <Splide
+        options={{
+          perPage: 3,
+          perMove: 2,
+          gap: "5rem",
+          autoWidth: false,
+          type: "loop",
+          arrows: true,
+          pagination: false,
+          drag: "free",
+          focus: "center",
+          snap: true,
+          padding: "2rem",
+          breakpoints: {
+            1200: {
+              gap: "4rem",
             },
-            slideFocus: false,
-          }}
-        >
-          {displayedItems.map((recipe) => (
-            <SplideSlide key={recipe.id} inert={loading ? "true" : undefined}>
-              <Link to={`/recipe/${recipe.id}`}>
-                <Card
-                  className="recipe-card"
-                  hoverable
-                  cover={<img alt={recipe.title} src={recipe.image} />}
-                >
-                  <Card.Meta
-                    title={recipe.title}
-                    description={
-                      <Typography.Text className="recipe-title"></Typography.Text>
-                    }
-                  />
-                </Card>
-              </Link>
-            </SplideSlide>
-          ))}
-        </Splide>
-      )}
+            992: {
+              gap: "3rem",
+            },
+            768: {
+              gap: "2rem",
+            },
+            576: {
+              gap: "1rem",
+            },
+          },
+        }}
+      >
+        {slides.map((r, idx) => (
+          <SplideSlide key={`${r.id}-${idx}`}>
+            <Link to={`/recipe/${r.id}`}>
+              <Card
+                hoverable
+                className="recipe-card"
+                cover={<img alt={r.title} src={r.image} />}
+              >
+                <Card.Meta title={r.title} />
+              </Card>
+            </Link>
+          </SplideSlide>
+        ))}
+      </Splide>
     </div>
   );
 }
-
-export default Latest;

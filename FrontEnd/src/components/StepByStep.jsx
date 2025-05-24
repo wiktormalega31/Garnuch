@@ -1,10 +1,15 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/splide.min.css";
+import { Button } from "antd";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./css/StepByStep.css";
+import PropTypes from "prop-types";
 
 const StepByStep = ({ instructions, onClose }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
   useEffect(() => {
@@ -18,11 +23,62 @@ const StepByStep = ({ instructions, onClose }) => {
     setIsDarkTheme(!isDarkTheme);
   };
 
+  if (!user?.is_premium) {
+    const steps = [
+      {
+        section: "Premium",
+        number: 1,
+        text: "Funkcja dostępna dla użytkowników Premium",
+        image: null,
+      },
+    ];
+
+    return (
+      <div className="modal-wrapper">
+        <div
+          className={`modal-content ${
+            isDarkTheme ? "dark-theme" : "light-theme"
+          }`}
+        >
+          <button className="close-button" onClick={onClose}>
+            ×
+          </button>
+          <Splide
+            options={{
+              type: "loop",
+              gap: "1rem",
+              pagination: false,
+              arrows: false,
+              autoplay: false,
+            }}
+          >
+            {steps.map((step, index) => (
+              <SplideSlide key={index}>
+                <div className="step-card">
+                  <p>
+                    <strong>Krok {step.number}:</strong> {step.text}
+                  </p>
+                  <Button
+                    type="primary"
+                    size="large"
+                    onClick={() => navigate("/premium")}
+                  >
+                    Przejdź do Premium
+                  </Button>
+                </div>
+              </SplideSlide>
+            ))}
+          </Splide>
+        </div>
+      </div>
+    );
+  }
+
   if (!instructions || instructions.length === 0) {
     return (
       <p>
         Brak szczegółowych instrukcji krok po kroku. Sprawdź pełne instrukcje w
-        sekcji Przepis&quot;.
+        sekcji &quot;Przepis&quot;.
       </p>
     );
   }
@@ -79,6 +135,10 @@ const StepByStep = ({ instructions, onClose }) => {
       </div>
     </div>
   );
+};
+StepByStep.propTypes = {
+  instructions: PropTypes.array.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default StepByStep;

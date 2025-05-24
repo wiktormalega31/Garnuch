@@ -1,88 +1,113 @@
+// src/pages/Login.jsx
 import { useState } from "react";
 import styled from "styled-components";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import GoogleButton from "react-google-button";
+import { FaGithub } from "react-icons/fa";
+import { ensureCsrfCookie } from "../axiosConfig";
 
-const Login = () => {
-  const [loginMode, setLoginMode] = useState("email"); // "email", "username", "register"
+/* ---------- regex ---------- */
+const emailOk = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+function Login() {
+  /* ------- state ------- */
+  const [mode, setMode] = useState("login"); // login | register
+  const [loginBy, setLoginBy] = useState("email"); // email | username
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+
   const { login, register } = useAuth();
+  const nav = useNavigate();
 
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  /* ------- submit ------- */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  const handleRegister = async () => {
-    if (!isValidEmail(email)) {
-      setError("Podaj prawidłowy adres email.");
-      return;
-    }
-
-    try {
-      await register(username, email, password);
-    } catch (err) {
-      const msg = err.response?.data
-        ? Object.values(err.response.data).flat().join(" ")
-        : "Wystąpił problem z rejestracją.";
-      setError(msg);
-    }
-  };
-
-  const handleLogin = async () => {
-    console.log("Kliknięto ZALOGUJ");
-
-    if (!password) {
-      setError("Podaj hasło.");
-      return;
-    }
-
-    try {
-      await login(loginMode === "email" ? email : username, password);
-      console.log("Login zakończony");
-      navigate("/home"); // Przekierowanie po udanym logowaniu
-    } catch (err) {
-      console.error("Błąd logowania", err);
-      setError("Nieprawidłowy login/email lub hasło.");
+    if (mode === "register") {
+      if (!emailOk(email)) return setError("Podaj prawidłowy e-mail.");
+      try {
+        await ensureCsrfCookie();
+        const ok = await register(username, email, password);
+        if (ok) nav("/verify");
+        alert(
+          "Rejestracja zakończona sukcesem. Sprawdź swoją skrzynkę e-mail, aby aktywować konto."
+        );
+      } catch (err) {
+        const msg = err.response?.data
+          ? Object.values(err.response.data).flat().join(" ")
+          : "Błąd rejestracji.";
+        setError(msg);
+      }
+    } else {
+      if (!password) return setError("Podaj hasło.");
+      try {
+        await ensureCsrfCookie();
+        const identifier = loginBy === "email" ? email : username;
+        await login(identifier, password);
+        nav("/");
+      } catch {
+        setError("Nieprawidłowe dane logowania.");
+      }
     }
   };
 
+  /* ------- render ------- */
   return (
-    <PageWrapper>
-      <LoginWrapper>
-        <h2>{loginMode === "register" ? "Rejestracja" : "Logowanie"}</h2>
-        <TabWrapper>
-          <Tab
-            isActive={loginMode === "email"}
-            onClick={() => setLoginMode("email")}
-          >
-            Email
-          </Tab>
-          <Tab
-            isActive={loginMode === "username"}
-            onClick={() => setLoginMode("username")}
-          >
-            Login
-          </Tab>
-          <Tab
-            isActive={loginMode === "register"}
-            onClick={() => setLoginMode("register")}
-          >
-            Rejestracja
-          </Tab>
-        </TabWrapper>
-        <FormWrapper>
-          {loginMode === "register" || loginMode === "email" ? (
+    <Page>
+      <Card>
+        {/* --- zakładki główne --- */}
+        <Tabs>
+          {["login", "register"].map((m) => (
+            <Tab key={m} aria-selected={mode === m} onClick={() => setMode(m)}>
+              {m === "login" ? "Login" : "Rejestracja"}
+            </Tab>
+          ))}
+        </Tabs>
+
+        {/* --- formularz --- */}
+        <Form onSubmit={handleSubmit}>
+          {mode === "login" && (
+            <LoginSwitch>
+              {["email", "username"].map((l) => (
+                <SmallTab
+                  key={l}
+                  aria-selected={loginBy === l}
+                  onClick={() => setLoginBy(l)}
+                >
+                  {l === "email" ? "E-mail" : "Login"}
+                </SmallTab>
+              ))}
+            </LoginSwitch>
+          )}
+
+          {/* --- pola wejściowe --- */}
+          {mode === "register" ? (
+            <>
+              <Input
+                type="text"
+                placeholder="Nazwa użytkownika"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+              <Input
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </>
+          ) : loginBy === "email" ? (
             <Input
               type="email"
-              placeholder="Email"
+              placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           ) : (
             <Input
@@ -90,111 +115,138 @@ const Login = () => {
               placeholder="Login"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
             />
           )}
-          {loginMode === "register" && (
-            <Input
-              type="text"
-              placeholder="Nazwa użytkownika"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          )}
+
           <Input
             type="password"
             placeholder="Hasło"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          <Button
-            onClick={loginMode === "register" ? handleRegister : handleLogin}
-          >
-            {loginMode === "register" ? "Zarejestruj się" : "Zaloguj się"}
-          </Button>
-        </FormWrapper>
-      </LoginWrapper>
-    </PageWrapper>
+
+          {error && <Error>{error}</Error>}
+
+          <Btn type="submit">
+            {mode === "login" ? "Zaloguj się" : "Zarejestruj się"}
+          </Btn>
+        </Form>
+
+        <OAuth
+          onClick={() =>
+            (window.location.href = "http://localhost:8000/auth/github-direct/")
+          }
+        >
+          <FaGithub size={18} style={{ marginRight: ".5rem" }} />
+          Zaloguj przez GitHub
+        </OAuth>
+      </Card>
+    </Page>
   );
-};
+}
 
-const PageWrapper = styled.div`
-  display: flex;
-  justify-content: center;
+export default Login;
+
+/* ───────── styled-components ───────── */
+
+const Page = styled.div`
+  min-height: 100dvh;
+  display: grid;
   align-items: center;
-  height: 100vh;
-  background-color: #f0f0f0;
+  padding: 10rem;
+  padding-left: 37vw;
 `;
 
-const LoginWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 300px;
-  padding: 2rem;
-  background-color: #ebe6e6;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+const Card = styled.div`
+  width: min(95vw, 330px);
+  background: #ebe6e6;
   border: 1px solid #5b422c;
-  position: relative;
+  border-radius: 8px;
+  padding: 1rem 2rem 2rem;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  visibility: visible;
 `;
 
-const TabWrapper = styled.div`
-  margin: 0;
+const Tabs = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 100%;
-  position: absolute;
-  top: -2.5rem;
-  background-color: #ebe6e6;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  margin: -1rem -2rem 1.5rem;
 `;
 
-const Tab = styled.div`
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+const Tab = styled.button`
   flex: 1;
-  text-align: center;
-  padding: 0.6rem 1rem;
-  cursor: pointer;
-  background-color: ${(props) => (props.isActive ? "#5b422c" : "#ddd")};
-  color: ${(props) => (props.isActive ? "white" : "#5b422c")};
+  padding: 0.7rem 0;
   border: 1px solid #5b422c;
-  transition: 0.3s;
-
-  &:hover {
-    background-color: #5b422c;
-    color: white;
+  background: ${({ "aria-selected": a }) => (a ? "#5b422c" : "#ddd")};
+  color: ${({ "aria-selected": a }) => (a ? "#fff" : "#5b422c")};
+  font-weight: 600;
+  cursor: pointer;
+  &:first-child {
+    border-right: none;
+    border-top-left-radius: 8px;
+  }
+  &:last-child {
+    border-top-right-radius: 8px;
   }
 `;
 
-const FormWrapper = styled.div`
-  margin-top: 1.5rem;
-  width: 100%;
+const LoginSwitch = styled.div`
+  display: flex;
+  margin-bottom: 1rem;
+`;
+
+const SmallTab = styled.button`
+  flex: 1;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  border: 1px solid #5b422c;
+  background: ${({ "aria-selected": a }) => (a ? "#5b422c" : "#ddd")};
+  color: ${({ "aria-selected": a }) => (a ? "#fff" : "#5b422c")};
+  cursor: pointer;
+  &:first-child {
+    border-right: none;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+  }
+  &:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+  }
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 `;
 
 const Input = styled.input`
-  padding: 1rem;
-  margin: 0.5rem 0;
-  width: 100%;
+  padding: 0.9rem 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
 `;
 
-const Button = styled.button`
+const Btn = styled.button`
   padding: 1rem;
-  background-color: #5b422c;
-  color: white;
+  background: #5b422c;
+  color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+`;
+
+const OAuth = styled(Btn)`
+  width: 100%;
   margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #333;
 `;
 
-const ErrorMessage = styled.p`
-  color: red;
+const Error = styled.p`
+  color: #d22;
   font-size: 0.9rem;
+  margin: 0;
 `;
-
-export default Login;

@@ -1,70 +1,60 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Card } from "antd"; // Użycie komponentu Ant Design Card
-import "./css/Category.css"; // Importuj plik CSS
+import { Card, message } from "antd";
+import { BACKEND } from "../axiosConfig";
+import "./css/Category.css";
 
 function Searched() {
-  const [searchedRecepies, setSearchedRecepies] = useState([]);
-  const [numRecipes, setNumRecipes] = useState(10); // Domyślna liczba przepisów na stronie
-  let params = useParams();
+  const [list, setList] = useState([]);
+  const [num, setNum] = useState(10);
+  const { search } = useParams();
 
-  const getSearched = async (name, number) => {
-    const data = await fetch(
-      `https://api.spoonacular.com/recipes/complexSearch?apiKey=${
-        import.meta.env.VITE_API_KEY
-      }&query=${name}&number=${number}`
-    );
-    const recipes = await data.json();
-    setSearchedRecepies(recipes.results);
+  const fetchSearched = async (q, n) => {
+    try {
+      const r = await fetch(`${BACKEND}/api/search/?query=${q}&number=${n}`, {
+        credentials: "include",
+      });
+      if (!r.ok) throw new Error();
+      setList(await r.json());
+    } catch {
+      message.error("Błąd wyszukiwania.");
+      setList([]);
+    }
   };
 
   useEffect(() => {
-    getSearched(params.search, numRecipes);
-  }, [params.search, numRecipes]); // Upewnij się, że zależności są poprawne
+    fetchSearched(search, num);
+  }, [search, num]);
 
   return (
     <div className="latest-recipes-container">
-      {/* Dodanie kontrolki wyboru liczby przepisów */}
       <div className="select-container">
-        <label htmlFor="numRecipes">Liczba przepisów na stronie: </label>
-        <select
-          id="numRecipes"
-          value={numRecipes}
-          onChange={(e) => setNumRecipes(parseInt(e.target.value))}
-        >
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-          <option value="20">20</option>
+        <label>Liczba przepisów: </label>
+        <select value={num} onChange={(e) => setNum(+e.target.value)}>
+          {[5, 10, 15, 20].map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
         </select>
       </div>
-      <motion.div
-        className="recipe-grid"
-        animate={{ opacity: 1 }}
-        initial={{ opacity: 0 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {searchedRecepies.length > 0 ? (
-          searchedRecepies.map((item) => (
-            <Link to={`/recipe/${item.id}`} key={item.id}>
+
+      <motion.div className="recipe-grid" animate={{ opacity: 1 }}>
+        {list.length ? (
+          list.map((r) => (
+            <Link to={`/recipe/${r.id}`} key={r.id}>
               <Card
                 hoverable
-                cover={<img alt={item.title} src={item.image} />}
+                cover={<img alt={r.title} src={r.image} />}
                 className="recipe-card"
               >
-                <div className="ant-card-body">
-                  <h4>{item.title}</h4>
-                </div>
+                <h4>{r.title}</h4>
               </Card>
             </Link>
           ))
         ) : (
-          <div className="no-recipes-message">
-            Brak przepisów do wyświetlenia.
-          </div>
+          <div className="no-recipes-message">Brak wyników.</div>
         )}
       </motion.div>
     </div>

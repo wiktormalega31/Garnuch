@@ -1,65 +1,67 @@
-/* eslint-disable no-unused-vars */
-import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
-import Pot from "../img/pot.png"; // Twoje logo
-import { FaBars, FaUserCircle } from "react-icons/fa"; // Ikona hamburgera i ikona profilu
-import { Layout, Menu, Dropdown, Button, Drawer } from "antd";
+// src/components/AppLayout.jsx
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import Pot from "../img/pot.png";
+import { FaBars, FaUserCircle } from "react-icons/fa";
+import { Layout, Menu, Dropdown, Button, message } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import Search from "./Search.jsx";
+import { useAuth } from "../context/AuthContext";
+import { readPremiumCookie } from "../utils/cookies";
 import "./css/Header.css";
 
 const { Header } = Layout;
 
+/* helper – usuń nie-HttpOnly cookie */
+const deleteCookie = (name) => {
+  document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+};
+
 function AppLayout() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Stan do obsługi rozwijanego menu
-  const [timeoutId, setTimeoutId] = useState(null); // Stan dla timeout ID
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // Stan dla szerokości okna
+  const [open, setOpen] = useState(false);
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
+  const toggleMenu = () => setOpen((p) => !p);
 
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
-  const onLogOut = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
-    window.location.reload();
-  };
-
-  const handleMouseEnter = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      setTimeoutId(null);
+  const onLogOut = async () => {
+    try {
+      await logout();
+    } finally {
+      deleteCookie("csrftoken");
+      navigate("/login", { replace: true });
     }
   };
 
-  const handleMouseLeave = () => {
-    const id = setTimeout(() => {
-      // Close profile menu after delay (no state to manage here)
-    }, 500); // Adjust the delay as needed
-    setTimeoutId(id);
+  /* -------- klik „Lista zakupów” -------- */
+  const handleShoppingClick = () => {
+    const isPremium = user?.is_premium ?? readPremiumCookie();
+
+    if (isPremium) {
+      navigate("/shoppinglist");
+    } else {
+      message.info("Funkcja dostępna w wersji Premium.");
+      navigate("/premium");
+    }
+    setOpen(false);
   };
 
+  /* -------- dropdown profilowy -------- */
   const profileMenu = (
     <Menu>
-      <Menu.Item>
+      <Menu.Item key="fav">
         <Link to="/favorites">Ulubione</Link>
       </Menu.Item>
-
-      <Menu.Item onClick={onLogOut}>Wyloguj</Menu.Item>
+      <Menu.Item key="profile" onClick={() => setOpen(false)}>
+        <Link to="/profile">Mój Profil</Link>
+      </Menu.Item>
+      <Menu.Item key="logout" onClick={onLogOut}>
+        Wyloguj
+      </Menu.Item>
     </Menu>
   );
 
+  /* -------- render -------- */
   return (
     <Layout>
       <Header className="header">
@@ -69,41 +71,47 @@ function AppLayout() {
             <span className="logo-text">Garnuch</span>
           </Link>
         </div>
+
         <Button
           className="hamburger-button"
           type="text"
           icon={<FaBars />}
           onClick={toggleMenu}
         />
-        <div className={`menu-container ${isMenuOpen ? "open" : ""}`}>
+
+        <div className={`menu-container ${open ? "open" : ""}`}>
           <div className="category-list">
-            <NavLink to={"/cuisine/vege"} className="category-item">
-              <Button className="category-button" block>
-                <h4>Vege</h4>
-              </Button>
-            </NavLink>
-            <NavLink to={"/cuisine/asian"} className="category-item">
-              <Button className="category-button" block>
-                <h4>Azjatyckie</h4>
-              </Button>
-            </NavLink>
-            <NavLink to={"/cuisine/italian"} className="category-item">
-              <Button className="category-button" block>
-                <h4>Włoskie</h4>
-              </Button>
-            </NavLink>
-            <NavLink to={"/cuisine/all"} className="category-item">
-              <Button className="category-button" block>
-                <h4>Wszystkie</h4>
-              </Button>
-            </NavLink>
-            <NavLink to={"/shoppinglist"} className="category-item">
-              <Button className="category-button" block>
-                <h4>Lista zakupów</h4>
-              </Button>
-            </NavLink>
+            {[
+              { to: "/cuisine/european", label: "Europejskie" },
+              { to: "/cuisine/vege", label: "Vege" },
+              { to: "/cuisine/asian", label: "Azjatyckie" },
+              { to: "/cuisine/italian", label: "Włoskie" },
+              { to: "/cuisine/all", label: "Wszystkie" },
+            ].map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className="category-item"
+                onClick={() => setOpen(false)}
+              >
+                <Button className="category-button" block>
+                  <h4>{label}</h4>
+                </Button>
+              </NavLink>
+            ))}
+
+            {/* Lista zakupów – warunkowy redirect */}
+            <Button
+              className="category-button"
+              block
+              onClick={handleShoppingClick}
+            >
+              <h4>Lista zakupów</h4>
+            </Button>
           </div>
+
           <Search />
+
           <Dropdown overlay={profileMenu} trigger={["click"]}>
             <Button icon={<FaUserCircle />} className="profile-button">
               <DownOutlined />

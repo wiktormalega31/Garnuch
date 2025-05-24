@@ -1,69 +1,72 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import API from "../axiosConfig";
 
+/* ──────────────────────────────────────────────────────────────
+ * 1.  Kontekst
+ * ──────────────────────────────────────────────────────────── */
 export const AuthContext = createContext(null);
 
+/* ──────────────────────────────────────────────────────────────
+ * 2.  Provider
+ * ──────────────────────────────────────────────────────────── */
 export const AuthProvider = ({ children }) => {
+  /* --- stan --- */
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (token) {
-      API.defaults.headers.common["Authorization"] = `Token ${token}`;
-      API.get("/auth/user/")
-        .then((res) => setUser(res.data))
-        .catch(() => {
-          setUser(null);
-          setToken(null);
-          localStorage.removeItem("token");
-        })
-        .finally(() => setLoading(false));
-    } else {
+  /* --- pomocnicza funkcja: pobierz profil, jeśli sesja istnieje --- */
+  const fetchUser = async () => {
+    try {
+      const res = await API.get("/auth/user/");
+      setUser(res.data);
+    } catch {
+      setUser(null);
+    } finally {
       setLoading(false);
     }
-  }, [token]);
+  };
 
+  /* --- przy starcie aplikacji: sprawdź sesję --- */
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  /* --- akcje --- */
   const login = async (username, password) => {
-    const res = await API.post("/auth/login/", { username, password });
-    const newToken = res.data.key;
-    localStorage.setItem("token", newToken);
-    API.defaults.headers.common["Authorization"] = `Token ${newToken}`;
-    setToken(newToken);
-    const userRes = await API.get("/auth/user/");
-    setUser(userRes.data);
+    await API.post("/auth/login/", { username, password });
+    await fetchUser(); // cookie sesyjne już ustawione
   };
 
   const register = async (username, email, password) => {
-    const res = await API.post("/auth/registration/", {
+    await API.post("/auth/registration/", {
       username,
       email,
       password1: password,
       password2: password,
     });
-    const newToken = res.data.key;
-    localStorage.setItem("token", newToken);
-    API.defaults.headers.common["Authorization"] = `Token ${newToken}`;
-    setToken(newToken);
-    const userRes = await API.get("/auth/user/");
-    setUser(userRes.data);
+    await fetchUser();
   };
 
   const logout = async () => {
     await API.post("/auth/logout/");
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("token");
-    delete API.defaults.headers.common["Authorization"];
+    setUser(null); // sesja usunięta przez backend
   };
 
+  /* --- render --- */
   return (
-    <AuthContext.Provider
-      value={{ user, token, login, register, logout, loading }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-import { useContext } from "react";
+
+/* --- PropTypes --- */
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+/* ──────────────────────────────────────────────────────────────
+ * 3.  Wygodny hook
+ * ──────────────────────────────────────────────────────────── */
 export const useAuth = () => useContext(AuthContext);
